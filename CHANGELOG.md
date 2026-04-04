@@ -47,6 +47,7 @@
 - Added `Copy` action for generated QR UUID in DJ `Settings`, including success/error clipboard feedback.
 - Added repository `.gitignore` entries for `node_modules/` and `.env`.
 - Extended `.gitignore` to exclude build/temp artifacts (`dist/`, `log.txt`) from commits.
+- Expanded `README.md` with a grouped repository-contents section describing app, mocks, tests, governance, and tooling.
 
 ### Notes
 - First frontend skeleton is now present; feature CRUD flows remain intentionally minimal in this iteration.
