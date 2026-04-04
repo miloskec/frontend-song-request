@@ -1,0 +1,25 @@
+@startuml
+actor Guest
+participant "Public Page" as Page
+participant "Public Session Store" as Store
+participant "Public Service" as Service
+participant "MSW Mock Handler" as MSW
+participant "Mock Requests DB" as DB
+
+Guest -> Page : open page with ?qr=<uuid>
+Page -> Store : set qrUuid
+Page -> Service : fetch public playlist
+Service -> MSW : GET /public/playlists/{qrUuid}
+MSW -> DB : resolve scenario
+DB --> MSW : playlist payload
+MSW --> Service : JSON response
+Service --> Page : render songs and settings
+
+Guest -> Page : submit request
+Page -> Service : POST /public/playlists/{qrUuid}/requests
+Service -> MSW : request payload
+MSW -> DB : create mock request
+DB --> MSW : success or validation error
+MSW --> Service : response
+Service --> Page : show success or error state
+@enduml

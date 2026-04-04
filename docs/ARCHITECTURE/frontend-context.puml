@@ -1,0 +1,28 @@
+@startuml
+actor Guest
+actor DJ
+rectangle "React SPA" {
+  component "Public Guest Pages" as PublicPages
+  component "DJ Dashboard Pages" as DJPages
+  component "Login Page" as LoginPage
+  component "Service Layer" as Services
+  component "State Layer" as State
+}
+component "Mock API / MSW" as MockApi
+component "Mock Data Store" as MockDb
+database "LocalStorage Persistence" as LocalStorage
+database "Future Laravel REST API" as LaravelApi
+
+Guest --> PublicPages
+DJ --> DJPages
+DJ --> LoginPage
+PublicPages --> State
+DJPages --> State
+LoginPage --> State
+State --> Services
+State --> LocalStorage : auth/session/ui persistence
+Services --> MockApi : mock mode
+MockApi --> MockDb
+MockDb --> LocalStorage : mutable mock data
+Services --> LaravelApi : real mode
+@enduml

@@ -1,0 +1,74 @@
+Read and follow AGENTS.md first.
+
+Goal:
+Build the initial frontend skeleton for this repo, using the existing harness/spec-driven structure.
+This iteration is frontend-only with mock data. Backend is future Laravel REST API and must not be implemented now.
+
+Scope for this task:
+- Vite app shell
+- routes
+- app layout
+- public guest page shell
+- DJ dashboard shell
+- mock service wiring
+- first mobile-first polished UI foundation
+
+Constraints:
+- React + TypeScript
+- keep architecture simple
+- prefer Zustand over Redux
+- use minimal dependencies
+- mobile-first
+- CRUD-friendly structure
+- use mock services only
+- support env toggle for mock mode
+- QR UUID must be read from query param
+- no feature expansion outside current scope
+
+Before coding:
+1. Read the relevant docs/specs only.
+2. Summarize the task in 2–4 lines.
+3. List exact files you will create/update.
+4. Then implement.
+
+Must read first:
+- AGENTS.md
+- docs/FRONTEND_SCOPE.md
+- docs/API_CONTRACT_MOCK.md
+- docs/STATE_MODEL.md
+- docs/UI_SCREENS.md
+- docs/TEST_STRATEGY.md
+- docs/GATES.md
+- docs/SPECS/guest-flow.md
+- docs/SPECS/dj-flow.md
+- docs/SPECS/queue-module.md
+
+Implementation requirements:
+- create a clean app shell
+- define routes for public guest flow and DJ area
+- create basic layout components
+- wire service layer through mock API abstraction
+- keep domain types aligned with mock contract
+- add minimal Zustand stores only where needed
+- prepare reusable mobile-first UI primitives
+- do not over-engineer styling or state
+- keep components small and typed
+
+Testing:
+- add/update unit tests for critical state and rendering behavior
+- cover loading/empty/basic success states where practical
+
+Docs discipline:
+- update CHANGELOG.md
+- update docs only if implementation changes documented behavior
+- do not modify unrelated files
+
+Validation:
+Run targeted checks first, then run the full relevant gate(s).
+
+Output format:
+- brief summary
+- files changed
+- key implementation notes
+- tests/gates run
+- remaining gaps or next step

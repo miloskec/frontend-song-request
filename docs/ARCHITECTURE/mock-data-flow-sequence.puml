@@ -1,0 +1,19 @@
+@startuml
+participant "React Page" as Page
+participant "Feature Hook / Service" as Service
+participant "API Client" as Client
+participant "MSW" as MSW
+participant "Mock Scenario Resolver" as Resolver
+participant "Mock DB Files" as MockDb
+
+Page -> Service : request data
+Service -> Client : call endpoint
+Client -> MSW : fake HTTP in mock mode
+MSW -> Resolver : resolve scenario by endpoint/context
+Resolver -> MockDb : load mock records
+MockDb --> Resolver : typed entities
+Resolver --> MSW : response payload
+MSW --> Client : mocked JSON response
+Client --> Service : typed result
+Service --> Page : render state
+@enduml

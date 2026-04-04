@@ -1,0 +1,25 @@
+@startuml
+actor DJ
+actor Guest
+participant "Queue Settings Page" as Settings
+participant "Queue Service" as Service
+participant "MSW Mock Handler" as MSW
+participant "Mock Queue DB" as DB
+participant "Public Queue Page" as PublicPage
+
+DJ -> Settings : change visibility mode
+Settings -> Service : PATCH /queues/{queueId}
+Service -> MSW : visibility payload
+MSW -> DB : save visibility mode
+DB --> MSW : updated queue settings
+MSW --> Service : success
+Service --> Settings : render saved state
+
+Guest -> PublicPage : refresh public queue
+PublicPage -> Service : GET /public/playlists/{qrUuid}/queue
+Service -> MSW : queue fetch
+MSW -> DB : build public projection
+DB --> MSW : filtered queue items
+MSW --> Service : public payload
+Service --> PublicPage : render allowed items only
+@enduml

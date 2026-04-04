@@ -1,0 +1,33 @@
+@startuml
+actor DJ
+participant "Queue Page" as Page
+participant "Dashboard Store" as Store
+participant "Queue Service" as Service
+participant "MSW Mock Handler" as MSW
+participant "Mock Queue DB" as DB
+
+DJ -> Page : open queue management
+Page -> Service : GET /queues/{queueId}/items
+Service -> MSW : fetch queue items
+MSW -> DB : load ordered queue
+DB --> MSW : queue items
+MSW --> Service : queue payload
+Service --> Page : render queue
+
+DJ -> Page : reorder queue
+Page -> Store : update local drag state
+Page -> Service : POST /queues/{queueId}/reorder
+Service -> MSW : item positions
+MSW -> DB : persist ordering
+DB --> MSW : updated order
+MSW --> Service : success payload
+Service --> Page : refresh queue state
+
+DJ -> Page : set now playing
+Page -> Service : PATCH /queues/{queueId}/current
+Service -> MSW : selected item id
+MSW -> DB : mark single now_playing item
+DB --> MSW : updated queue snapshot
+MSW --> Service : success payload
+Service --> Page : render updated now playing state
+@enduml

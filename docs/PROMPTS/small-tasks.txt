@@ -1,0 +1,18 @@
+Follow AGENTS.md and relevant specs.
+
+Task:
+Implement only the public guest page shell with:
+- playlist header
+- song search input
+- song list section
+- request button placeholders
+- loading/empty states
+
+Use existing mock contracts and current app structure.
+Do not touch DJ dashboard in this task.
+
+Before coding:
+- summarize
+- list files
+
+Then implement, add tests, update CHANGELOG, run targeted gates.
