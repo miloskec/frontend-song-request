@@ -3,6 +3,22 @@
 ## Mission
 This repository is built with a specification-driven, harness-friendly workflow for a frontend-only React SPA that currently runs on mock data but is designed to align with a future Laravel REST API.
 
+## Architecture ownership summary
+- `pages` coordinate screens.
+- `stores` own shared client state.
+- `services` own API transport.
+- `mocks` mirror backend contract.
+- business invariants must remain aligned with specs/state model.
+
+## Context loading order
+Before making changes, load context in this order:
+1. relevant spec
+2. state model
+3. API contract
+4. architecture overview
+5. touched code files
+6. targeted tests
+
 ## Global rules
 1. Read the relevant specs before editing code.
 2. Summarize the intended change in 2-4 lines before implementation.

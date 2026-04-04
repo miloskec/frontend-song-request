@@ -3,6 +3,13 @@
 ## Unreleased
 
 ### Added
+- Added `.vscode/` to `.gitignore` to avoid committing local editor workspace settings.
+- Added `src/stores/README.md` documenting store ownership, shared-state criteria, and boundaries for what must remain local component state.
+- Added `skills/trace-change-to-spec.md` as a spec-sync intelligence skill to trace touched code paths to required spec/state/contract/diagram/test updates.
+- Added explicit agent guidance in `AGENTS.md` for architecture ownership summary and required context loading order; clarified `docs vs skills vs agents` model in `docs/USAGE_GUIDE.md`.
+- Strengthened `docs/ARCHITECTURE/overview.md` with explicit layer ownership, allowed/forbidden dependency direction, state/service/UI boundaries, and a "What Must Never Happen" guardrail section for agents/book guidance.
+- Expanded `gates/gate-spec-sync.sh` with baseline diff-aware checks that enforce doc/diagram touchpoints for store changes, request/queue/visibility flow changes, and API contract-shape changes.
+- Added a concise "Which law each gate enforces" mapping in `docs/GATES.md`.
 - Initial harness/governance foundation for frontend-only repo.
 - PRD/SRS-aligned documentation set for QR-based song request frontend.
 - Agent instructions, skills, gates, mock strategy, and PlantUML skeletons.

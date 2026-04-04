@@ -3,6 +3,11 @@
 ## Scope and status
 This guide describes the **current frontend demo/prototype** behavior only.
 
+## Guidance model: docs vs skills vs agents
+- **Docs as truth**: specifications, state model, and contracts define expected behavior and boundaries.
+- **Skills as action patterns**: reusable execution/playbook steps for common implementation workflows.
+- **Agents as role guidance**: collaboration style, guardrails, and decision hygiene while applying docs/skills.
+
 Status labels used in this document:
 - **Implemented**: available now in the current frontend routes/pages.
 - **Scaffolded**: shell-level support exists, but deeper feature flow is intentionally minimal.

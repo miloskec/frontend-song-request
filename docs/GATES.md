@@ -30,5 +30,11 @@ This gate starts simple. It can evolve later to diff-aware checks.
 ### gate-all
 Runs all gates in order.
 
+## Which law each gate enforces
+- `gate-tests`: protects user-facing behavior and regression safety.
+- `gate-types`: protects contract correctness and typed boundary integrity.
+- `gate-spec-sync`: protects law/city alignment between code, docs, contracts, diagrams, and workflow discipline.
+- `gate-build`: protects deployability (the app can compile for production).
+
 ## Rule
 No feature work is considered complete until `gate-all` passes.
