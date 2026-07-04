@@ -4,6 +4,7 @@ import { fetchPublicPlaylist, fetchPublicQueue, submitPublicRequest } from '@/se
 import { usePublicSessionStore } from '@/stores';
 import type { RequestCreatePayload, RequestCreateResponse } from '@/types/api';
 import type { Song } from '@/types/domain';
+import { emitDiagnostic } from '@/utils/diagnostics';
 import { env } from '@/utils/env';
 import '@/styles/guest-modern.css';
 
@@ -42,6 +43,31 @@ export function PublicPage() {
         if (!isMounted) {
           return;
         }
+
+        if (playlistPayload.settings.queue_visibility_mode !== queuePayload.queue.visibility_mode) {
+          emitDiagnostic('warn', {
+            event: 'public.visibility_mode_mismatch',
+            flow: 'guest-public-load',
+            entityId: qr,
+            expected: `settings queue_visibility_mode ${playlistPayload.settings.queue_visibility_mode}`,
+            actual: `queue visibility_mode ${queuePayload.queue.visibility_mode}`,
+            status: 'signal',
+          });
+        }
+
+        const previewIds = playlistPayload.queue_preview.map((item) => item.id).join(',');
+        const queueIds = queuePayload.items.map((item) => item.id).join(',');
+        if (previewIds !== queueIds) {
+          emitDiagnostic('warn', {
+            event: 'public.queue_projection_mismatch',
+            flow: 'guest-public-load',
+            entityId: qr,
+            expected: 'queue_preview and public queue items remain aligned',
+            actual: `queue_preview=[${previewIds}] queue=[${queueIds}]`,
+            status: 'signal',
+          });
+        }
+
         setPublicPlaylist(playlistPayload);
         setPublicQueue(queuePayload);
         setStatus('success');
@@ -97,6 +123,14 @@ export function PublicPage() {
     event.preventDefault();
 
     if (!selectedSong || !qrUuid) {
+      emitDiagnostic('warn', {
+        event: 'public.request_precondition_failed',
+        flow: 'guest-request-submit',
+        entityId: qrUuid ?? 'missing',
+        expected: 'selectedSong and qrUuid present before submit',
+        actual: `selectedSong=${selectedSong ? 'present' : 'missing'} qrUuid=${qrUuid ? 'present' : 'missing'}`,
+        status: 'blocked',
+      });
       setSubmitStatus('error');
       setSubmitFeedback('Unable to submit right now. Reload the playlist and try again.');
       return;
@@ -116,8 +150,6 @@ export function PublicPage() {
       const nextRequested: Record<string, true> = { ...requestedSongIds, [selectedSong.id]: true };
       setRequestedSongIds(nextRequested);
       window.localStorage.setItem(`song-request.requested-songs.${qrUuid}`, JSON.stringify(nextRequested));
-      setSubmitStatus('success');
-      setSubmitFeedback(response.message);
       closeRequestModal();
       setSubmitStatus('success');
       setSubmitFeedback(response.message);

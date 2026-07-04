@@ -9,6 +9,7 @@ import {
 } from '@/services/djQueueService';
 import { useDjDashboardStore } from '@/stores';
 import type { QueueItem, VisibilityMode } from '@/types/domain';
+import { emitDiagnostic } from '@/utils/diagnostics';
 
 type Status = 'loading' | 'success' | 'empty' | 'error';
 
@@ -28,6 +29,13 @@ export function QueuePage() {
     try {
       const payload = await fetchDjQueueScreenData(queueId);
       if (!payload.queue) {
+        emitDiagnostic('warn', {
+          event: 'dj.queue_missing',
+          flow: 'dj-queue-load',
+          expected: 'at least one active queue',
+          actual: 'no active queues found',
+          status: 'empty',
+        });
         setStatus('empty');
         setItems([]);
         setSongsById({});
@@ -36,6 +44,16 @@ export function QueuePage() {
       }
 
       if (!selectedQueueId) {
+        setSelectedQueueId(payload.queue.id);
+      } else if (selectedQueueId !== payload.queue.id) {
+        emitDiagnostic('warn', {
+          event: 'dj.stale_selected_queue_id',
+          flow: 'dj-queue-load',
+          entityId: selectedQueueId,
+          expected: `selectedQueueId resolves to existing queue ${selectedQueueId}`,
+          actual: `resolved queue ${payload.queue.id}`,
+          status: 'repair-applied',
+        });
         setSelectedQueueId(payload.queue.id);
       }
 

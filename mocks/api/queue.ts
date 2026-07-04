@@ -18,6 +18,48 @@ interface QueueVisibilityPayload {
 
 type ReorderDirection = 'up' | 'down';
 
+function applyQueueInvariantRepairs(queueId: string): { repaired: boolean } {
+  const queue = queues.find((item) => item.id === queueId);
+  if (!queue) {
+    throw new Error('Queue not found');
+  }
+
+  const items = queueItems.filter((item) => item.queue_id === queueId);
+  const nowPlayingItems = items.filter((item) => item.status === 'now_playing');
+
+  if (nowPlayingItems.length > 1) {
+    throw new Error('Queue invariant violation: multiple now_playing items.');
+  }
+
+  const uniquePositions = new Set(items.map((item) => item.position));
+  if (uniquePositions.size !== items.length) {
+    throw new Error('Queue invariant violation: duplicate queue positions.');
+  }
+
+  let repaired = false;
+  const nowPlayingItem = nowPlayingItems[0] ?? null;
+
+  if (nowPlayingItem && queue.current_queue_item_id !== nowPlayingItem.id) {
+    queue.current_queue_item_id = nowPlayingItem.id;
+    repaired = true;
+  }
+
+  if (!nowPlayingItem && queue.current_queue_item_id !== null) {
+    queue.current_queue_item_id = null;
+    repaired = true;
+  }
+
+  if (
+    queue.current_queue_item_id &&
+    !items.some((item) => item.id === queue.current_queue_item_id)
+  ) {
+    queue.current_queue_item_id = nowPlayingItem?.id ?? null;
+    repaired = true;
+  }
+
+  return { repaired };
+}
+
 function persistQueueState() {
   savePersistedDb('song-request.db.queues', queues);
   savePersistedDb('song-request.db.queue-items', queueItems);
@@ -26,10 +68,24 @@ function persistQueueState() {
 }
 
 export function listQueues() {
+  let hasRepair = false;
+  for (const queue of queues) {
+    const result = applyQueueInvariantRepairs(queue.id);
+    if (result.repaired) {
+      hasRepair = true;
+    }
+  }
+  if (hasRepair) {
+    persistQueueState();
+  }
   return { data: queues };
 }
 
 export function listQueueItems(queueId: string) {
+  const result = applyQueueInvariantRepairs(queueId);
+  if (result.repaired) {
+    persistQueueState();
+  }
   return {
     data: queueItems.filter((item) => item.queue_id === queueId).sort((a, b) => a.position - b.position),
   };
@@ -59,6 +115,7 @@ export function addQueueItem(queueId: string, payload: AddQueueItemPayload): { i
   };
 
   queueItems.push(item);
+  applyQueueInvariantRepairs(queueId);
   persistQueueState();
   return { item };
 }
@@ -94,6 +151,7 @@ export function setCurrentQueueItem(queueId: string, itemId: string): { item: Qu
 
   targetItem.status = 'now_playing';
   queue.current_queue_item_id = itemId;
+  applyQueueInvariantRepairs(queueId);
   persistQueueState();
   return { item: targetItem };
 }
@@ -114,6 +172,7 @@ export function updateQueueItemStatus(queueId: string, itemId: string, status: Q
     queue.current_queue_item_id = null;
   }
 
+  applyQueueInvariantRepairs(queueId);
   persistQueueState();
   return { item: targetItem };
 }
@@ -134,6 +193,7 @@ export function removeQueueItem(queueId: string, itemId: string): { removed: boo
     queue.current_queue_item_id = null;
   }
 
+  applyQueueInvariantRepairs(queueId);
   persistQueueState();
   return { removed: true };
 }
@@ -191,6 +251,7 @@ export function moveQueueItem(queueId: string, itemId: string, direction: Reorde
   current.position = swapWith.position;
   swapWith.position = currentPosition;
 
+  applyQueueInvariantRepairs(queueId);
   persistQueueState();
   return { moved: true };
 }

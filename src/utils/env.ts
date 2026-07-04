@@ -2,4 +2,5 @@ export const env = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1',
   useMockApi: String(import.meta.env.VITE_USE_MOCK_API ?? 'true') === 'true',
   qrQueryParam: import.meta.env.VITE_QR_QUERY_PARAM ?? 'qr',
+  diagnosticsEnabled: String(import.meta.env.VITE_ENABLE_DIAGNOSTICS ?? 'false') === 'true',
 };

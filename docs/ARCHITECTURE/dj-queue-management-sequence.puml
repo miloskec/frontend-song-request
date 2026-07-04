@@ -3,6 +3,7 @@ actor DJ
 participant "Queue Page" as Page
 participant "Dashboard Store" as Store
 participant "Queue Service" as Service
+participant "Diagnostics Utility" as Diagnostics
 participant "MSW Mock Handler" as MSW
 participant "Mock Queue DB" as DB
 
@@ -12,6 +13,7 @@ Service -> MSW : fetch queue items
 MSW -> DB : load ordered queue
 DB --> MSW : queue items
 MSW --> Service : queue payload
+Service -> Diagnostics : emit queue invariant signals (gated)
 Service --> Page : render queue
 
 DJ -> Page : reorder queue
@@ -19,6 +21,7 @@ Page -> Store : update local drag state
 Page -> Service : POST /queues/{queueId}/reorder
 Service -> MSW : item positions
 MSW -> DB : persist ordering
+DB -> DB : apply queue invariant checks/repairs
 DB --> MSW : updated order
 MSW --> Service : success payload
 Service --> Page : refresh queue state
@@ -27,6 +30,7 @@ DJ -> Page : set now playing
 Page -> Service : PATCH /queues/{queueId}/current
 Service -> MSW : selected item id
 MSW -> DB : mark single now_playing item
+DB -> DB : apply queue invariant checks/repairs
 DB --> MSW : updated queue snapshot
 MSW --> Service : success payload
 Service --> Page : render updated now playing state

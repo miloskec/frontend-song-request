@@ -3,6 +3,7 @@ actor Guest
 participant "Public Page" as Page
 participant "Public Session Store" as Store
 participant "Public Service" as Service
+participant "Diagnostics Utility" as Diagnostics
 participant "MSW Mock Handler" as MSW
 participant "Mock Requests DB" as DB
 
@@ -13,6 +14,7 @@ Service -> MSW : GET /public/playlists/{qrUuid}
 MSW -> DB : resolve scenario
 DB --> MSW : playlist payload
 MSW --> Service : JSON response
+Service -> Diagnostics : emit contract/flow signal (gated)
 Service --> Page : render songs and settings
 
 Guest -> Page : submit request
@@ -21,5 +23,6 @@ Service -> MSW : request payload
 MSW -> DB : create mock request
 DB --> MSW : success or validation error
 MSW --> Service : response
+Service -> Diagnostics : emit submit success/failure signal (gated)
 Service --> Page : show success or error state
 @enduml

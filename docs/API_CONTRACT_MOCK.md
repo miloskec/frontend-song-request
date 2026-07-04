@@ -85,6 +85,13 @@ Returns request details.
 ### PATCH `/requests/:requestId/status`
 Updates request status.
 
+#### Mock transition guard
+- Allowed transitions in current mock module:
+  - `pending -> approved`
+  - `pending -> rejected`
+  - idempotent same-status update
+- Disallowed transitions throw an error (example: `rejected -> approved`).
+
 ## Queue
 ### GET `/queues`
 Returns owned active queues.
@@ -112,6 +119,20 @@ Accepts item-position map.
 
 ### PATCH `/queues/:queueId/current`
 Sets current now playing item.
+
+#### Mock queue invariant checks
+Queue mutations and reads enforce:
+- max one `now_playing` item per queue
+- unique queue positions per queue
+- `current_queue_item_id` must align with queue items
+
+Recoverable mismatch handling in mock mode:
+- stale `current_queue_item_id` is repaired to aligned value (`now_playing` item or `null`).
+
+Unrecoverable mismatch handling in mock mode:
+- multiple `now_playing` items
+- duplicate positions
+- these throw errors as invariant violations.
 
 ## Imports
 ### POST `/imports`

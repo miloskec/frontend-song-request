@@ -15,6 +15,17 @@ export function updateRequestStatus(requestId: string, status: SongRequest['stat
     throw new Error('Request not found');
   }
 
+  const allowedTransitions: Record<string, string[]> = {
+    pending: ['approved', 'rejected', 'pending'],
+    approved: ['approved'],
+    rejected: ['rejected'],
+  };
+
+  const allowed = allowedTransitions[request.status] ?? [request.status];
+  if (!allowed.includes(status)) {
+    throw new Error(`Invalid request status transition: ${request.status} -> ${status}`);
+  }
+
   request.status = status;
   savePersistedDb('song-request.db.requests', requests);
   return request;

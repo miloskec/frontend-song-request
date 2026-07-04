@@ -3,6 +3,13 @@
 ## Unreleased
 
 ### Added
+- Added `docs/OBSERVABILITY.md` with repository-specific runtime issue signals, signal-to-layer diagnosis mapping, and environment-gated diagnostic logging guidance.
+- Added `docs/FAILURE_REPAIR_LOOP.md` defining a constrained repair workflow from runtime signal to verified state through existing harness gates.
+- Added centralized diagnostics utility `src/utils/diagnostics.ts` and response contract guards `src/utils/contractGuards.ts` for structured, lightweight observability at service boundaries.
+- Added focused tests for new detection/guard behavior:
+  - `src/test/contractGuards.test.ts`
+  - `src/test/requestStatusTransitions.test.ts`
+  - `src/test/queueInvariantRepair.test.ts`
 - Added `.vscode/` to `.gitignore` to avoid committing local editor workspace settings.
 - Added `src/stores/README.md` documenting store ownership, shared-state criteria, and boundaries for what must remain local component state.
 - Added `skills/trace-change-to-spec.md` as a spec-sync intelligence skill to trace touched code paths to required spec/state/contract/diagram/test updates.
@@ -55,6 +62,14 @@
 - Added repository `.gitignore` entries for `node_modules/` and `.env`.
 - Extended `.gitignore` to exclude build/temp artifacts (`dist/`, `log.txt`) from commits.
 - Expanded `README.md` with a grouped repository-contents section describing app, mocks, tests, governance, and tooling.
+
+### Changed
+- Updated `src/services/publicService.ts` to validate contract shape and emit structured success/failure diagnostics for guest playlist/queue/request flows.
+- Updated `src/services/djQueueService.ts` to emit queue-state mismatch signals (multiple now-playing, stale pointer, duplicate positions).
+- Updated `src/pages/guest/PublicPage.tsx` and `src/pages/dj/QueuePage.tsx` with targeted detection signals for projection mismatch, precondition failures, missing queue, and stale selected queue context.
+- Updated `mocks/api/requests.ts` to enforce allowed request status transitions and fail fast on invalid transitions.
+- Updated `mocks/api/queue.ts` with queue invariant checks and constrained repair for stale `current_queue_item_id`.
+- Updated architecture/API docs (`docs/ARCHITECTURE/overview.md`, sequence diagrams, `docs/API_CONTRACT_MOCK.md`) to stay aligned with the new detection and repair behavior.
 
 ### Notes
 - First frontend skeleton is now present; feature CRUD flows remain intentionally minimal in this iteration.

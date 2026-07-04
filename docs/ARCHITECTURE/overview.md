@@ -5,6 +5,7 @@
 - Mock-first service layer
 - MSW-based fake HTTP responses in demo mode
 - Future Laravel REST API compatibility preserved through typed contracts
+- Centralized diagnostics utility with environment-gated structured signals (`src/utils/diagnostics.ts`)
 
 ## Layers
 1. Spec layer (`docs/SPECS`, contracts, state model)
@@ -15,7 +16,9 @@
 - `pages` render workflows and compose screen-level behavior.
 - `stores` own shared client state and state transitions used across screens.
 - `services` own API interaction, request/response mapping, and error normalization.
+- `services` also own contract-shape detection and service-layer diagnostic signaling.
 - `mocks` simulate backend contracts and deterministic scenarios for local/demo mode.
+- `mocks` own mock-domain invariant checks and constrained data-shape repair where safe.
 - `components` own presentation concerns and local UI state only.
 
 ## Dependency direction (allowed)
